@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  golang-backend:
+    container_name: golang-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      AUTHENTICATION_SECRET: ${AUTHENTICATION_SECRET}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - golang-backend-db
+    volumes:
+      - dbdata:/app/data
+    networks:
+      - backend-network
+
+  golang-backend-db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - backend-network
+
+volumes:
+  dbdata:
+
+networks:
+  backend-network:
