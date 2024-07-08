@@ -15,20 +15,30 @@ func init() {
 }
 
 type App struct {
-	Addr string
+	Addr     string
+	Migrate  bool
+	Seed     bool
+	Rollback bool
 }
 
-func New(Addr string) *App {
+func New(Addr string, Migrate bool, Seed bool, Rollback bool) *App {
 	return &App{
-		Addr: Addr,
+		Addr:     Addr,
+		Migrate:  Migrate,
+		Seed:     Seed,
+		Rollback: Rollback,
 	}
 }
 
 func (app *App) Start() {
 	// Run database migrations
-	// database.Rollback()
-	database.Migrate()
-	database.Seed()
+	if app.Migrate {
+		database.Rollback()
+		database.Migrate()
+	}
+	if app.Seed {
+		database.Seed()
+	}
 	// Workers
 	r := chi.NewRouter()
 	routes(r)

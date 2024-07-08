@@ -78,7 +78,12 @@ func authMiddleware(next http.Handler) http.Handler {
 		}
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 		tokenRepository := repository.NewTokenRepository()
-		token, _ := tokenRepository.FindByToken(tokenString)
+		token, err := tokenRepository.FindByToken(tokenString)
+		if err != nil {
+			logrus.Errorf("failed to get user")
+			errorHandler.WriteError(w, errors.New("invalid token"), http.StatusInternalServerError)
+			return
+		}
 		if !token.IsActive {
 			logrus.Errorf("token has expired %d", userID)
 			errorHandler.WriteError(w, errors.New("invalid token"), http.StatusUnauthorized)

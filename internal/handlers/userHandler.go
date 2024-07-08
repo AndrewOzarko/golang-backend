@@ -43,7 +43,12 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 	repository := repository.NewTokenRepository()
 
-	token, _ := repository.FindByToken(tokenString)
+	token, err := repository.FindByToken(tokenString)
+	if err != nil {
+		logrus.Errorf(err.Error())
+		errorHandler.WriteError(w, err, http.StatusUnauthorized)
+		return
+	}
 	token.IsActive = false
 
 	err = repository.UpdateToken(token)

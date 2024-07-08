@@ -14,6 +14,7 @@ type User struct {
 	Password  string     `json:"-"`
 	CreatedAt time.Time  `json:"created_at"`
 	JwtTokens []JwtToken `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	ParentID  *int64     `json:"-" gorm:"nullable"`
 	UpdatedAt time.Time  `json:"updated_at"`
 	DeletedAt *time.Time `json:"-"`
 }
